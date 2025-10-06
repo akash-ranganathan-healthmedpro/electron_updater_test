@@ -46,8 +46,8 @@ publish:
   #
   # 2) GitHub Releases (recommended for public repos)
   provider: github
-  owner: YOUR_GH_OWNER
-  repo: YOUR_REPO_NAME
+  owner: akash-ranganathan-healthmedpro
+  repo: electron_updater_test
   releaseType: release
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
