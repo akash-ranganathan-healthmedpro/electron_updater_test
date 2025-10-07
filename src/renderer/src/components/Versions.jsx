@@ -10,8 +10,8 @@ function Versions() {
     // This gets injected during the build process
     const version =
       import.meta.env.VITE_APP_VERSION ||
-      window.electron?.process?.env?.npm_package_version ||
-      '1.0.7'
+      window.electron?.process?.env?.npm_package_version || "unknown"
+
 
     setAppVersion(version)
 

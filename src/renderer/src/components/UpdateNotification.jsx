@@ -11,7 +11,7 @@ function UpdateNotification() {
     const version =
       import.meta.env.VITE_APP_VERSION ||
       window.electron?.process?.env?.npm_package_version ||
-      '1.0.7'
+      'unknown'
 
     setCurrentVersion(version)
 
