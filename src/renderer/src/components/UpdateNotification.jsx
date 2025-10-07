@@ -4,8 +4,17 @@ function UpdateNotification() {
   const [updateInfo, setUpdateInfo] = useState(null)
   const [isVisible, setIsVisible] = useState(false)
   const [downloadProgress, setDownloadProgress] = useState(0)
+  const [currentVersion, setCurrentVersion] = useState('')
 
   useEffect(() => {
+    // Simple approach: Use build-time environment variable
+    const version =
+      import.meta.env.VITE_APP_VERSION ||
+      window.electron?.process?.env?.npm_package_version ||
+      '1.0.7'
+
+    setCurrentVersion(version)
+
     // Listen for update status changes
     const removeUpdateStatusListener = window.api?.onUpdateStatus?.((status) => {
       switch (status.status) {
@@ -77,7 +86,7 @@ function UpdateNotification() {
         <div className="update-content">
           <p>A new version of the application is available:</p>
           <div className="version-info">
-            <span className="current-version">Current: v1.0.6</span>
+            <span className="current-version">Current: v{currentVersion}</span>
             <span className="arrow">→</span>
             <span className="new-version">New: v{updateInfo.version}</span>
           </div>

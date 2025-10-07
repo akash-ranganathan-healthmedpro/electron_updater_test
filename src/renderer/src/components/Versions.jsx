@@ -6,13 +6,14 @@ function Versions() {
   const [updateStatus, setUpdateStatus] = useState('')
 
   useEffect(() => {
-    // Get app version from package.json
-    if (window.electron.process.env.npm_package_version) {
-      setAppVersion(window.electron.process.env.npm_package_version)
-    } else {
-      // Fallback to reading from package.json
-      setAppVersion('1.0.6') // Current version from package.json
-    }
+    // Simple approach: Use build-time environment variable
+    // This gets injected during the build process
+    const version =
+      import.meta.env.VITE_APP_VERSION ||
+      window.electron?.process?.env?.npm_package_version ||
+      '1.0.7'
+
+    setAppVersion(version)
 
     // Listen for update status changes
     const removeUpdateStatusListener = window.api?.onUpdateStatus?.((status) => {
