@@ -77,52 +77,89 @@ app.on('window-all-closed', () => {
 // code. You can also put them in separate files and require them here.
 
 function setupAutoUpdates(mainWindow) {
-  if (is.dev) return
+  if (is.dev) {
+    console.log('Auto-updater disabled in development mode')
+    return
+  }
 
+  // Configure auto-updater for production experience
   autoUpdater.autoDownload = true
   autoUpdater.autoInstallOnAppQuit = true
 
+  // Set update server URL (you'll need to configure this for your app)
+  // autoUpdater.setFeedURL({
+  //   provider: 'github',
+  //   owner: 'your-username',
+  //   repo: 'your-repo'
+  // })
+
+  // Handle manual update checks
   ipcMain.handle('app/check-for-updates', async () => {
     try {
+      console.log('Checking for updates...')
       const result = await autoUpdater.checkForUpdates()
       return { status: 'checking', updateInfo: result?.updateInfo }
     } catch (error) {
+      console.error('Error checking for updates:', error)
       mainWindow.webContents.send('update/status', { status: 'error', error: String(error) })
       return { status: 'error', error: String(error) }
     }
   })
 
+  // Handle quit and install
   ipcMain.handle('app/quit-and-install', () => {
+    console.log('Quitting and installing update...')
     autoUpdater.quitAndInstall()
   })
 
+  // Event handlers for auto-updater
   autoUpdater.on('checking-for-update', () => {
+    console.log('Checking for update...')
     mainWindow.webContents.send('update/status', { status: 'checking' })
   })
 
   autoUpdater.on('update-available', (info) => {
+    console.log('Update available:', info.version)
     mainWindow.webContents.send('update/status', { status: 'available', info })
   })
 
   autoUpdater.on('update-not-available', (info) => {
+    console.log('No update available. Current version is latest.')
     mainWindow.webContents.send('update/status', { status: 'none', info })
   })
 
   autoUpdater.on('error', (error) => {
+    console.error('Auto-updater error:', error)
     mainWindow.webContents.send('update/status', { status: 'error', error: String(error) })
   })
 
   autoUpdater.on('download-progress', (progress) => {
+    console.log(`Download progress: ${progress.percent}%`)
     mainWindow.webContents.send('update/progress', progress)
   })
 
   autoUpdater.on('update-downloaded', (info) => {
+    console.log('Update downloaded successfully:', info.version)
     mainWindow.webContents.send('update/status', { status: 'downloaded', info })
   })
 
+  // Check for updates on app start (with delay to ensure window is ready)
   setTimeout(() => {
+    console.log('Checking for updates on startup...')
     autoUpdater.checkForUpdates().catch((error) => {
+      console.error('Failed to check for updates on startup:', error)
       mainWindow.webContents.send('update/status', { status: 'error', error: String(error) })
     })
-  }, 3000)
+  }, 5000) // Increased delay to 5 seconds
+
+  // Check for updates every hour
+  setInterval(
+    () => {
+      console.log('Periodic update check...')
+      autoUpdater.checkForUpdates().catch((error) => {
+        console.error('Periodic update check failed:', error)
+      })
+    },
+    60 * 60 * 1000
+  ) // 1 hour
 }

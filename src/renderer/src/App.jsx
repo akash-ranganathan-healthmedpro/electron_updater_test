@@ -1,4 +1,5 @@
 import Versions from './components/Versions'
+import UpdateNotification from './components/UpdateNotification'
 import electronLogo from './assets/electron.svg'
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         </div>
       </div>
       <Versions></Versions>
+      <UpdateNotification />
     </>
   )
 }
